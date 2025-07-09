@@ -1,34 +1,457 @@
-# Gradle files
-.gradle/
-build/
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebHelp 0.1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+            overflow: hidden;
+            user-select: none;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,255,255,0.5);
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #00ffff;
+            animation: rgbBorder 5s infinite;
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes rgbBorder {
+            0% { border-color: #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.5); }
+            33% { border-color: #00ff00; box-shadow: 0 0 20px rgba(0,255,0,0.5); }
+            66% { border-color: #0000ff; box-shadow: 0 0 20px rgba(0,0,255,0.5); }
+            100% { border-color: #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.5); }
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff, #ff0000);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rgbText 5s ease infinite;
+        }
+        @keyframes rgbText {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #00ffff;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff);
+            background-size: 200% 200%;
+            animation: rgbButton 3s ease infinite;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+        @keyframes rgbButton {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        button:hover {
+            transform: scale(1.02);
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            animation: rgbText 5s ease infinite;
+            background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff, #ff0000);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #444;
+            min-height: 100px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #00ffff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .prank {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        .prank-text {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            animation: rgbTextFast 0.05s linear infinite, float 3s infinite ease-in-out;
+            text-shadow: 0 0 10px #fff;
+            z-index: 1002;
+            pointer-events: none;
+            font-family: 'Impact', sans-serif;
+        }
+        @keyframes rgbTextFast {
+            0% { color: #ff0000; }
+            20% { color: #ffff00; }
+            40% { color: #00ff00; }
+            60% { color: #00ffff; }
+            80% { color: #0000ff; }
+            100% { color: #ff00ff; }
+        }
+        .bsod {
+            background: #0000AA;
+            color: white;
+            width: 100%;
+            height: 100%;
+            padding: 50px;
+            font-family: 'Courier New', monospace;
+            display: none;
+            z-index: 1001;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        .bsod-text {
+            font-size: 24px;
+            line-height: 1.5;
+        }
+        .prank-gif {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            z-index: 1001;
+            animation: float 3s infinite ease-in-out;
+            pointer-events: none;
+            image-rendering: pixelated;
+        }
+        .prank-sticker {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            z-index: 1003;
+            animation: shake 0.5s infinite;
+            pointer-events: none;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(100px, 50px) rotate(10deg) scale(1.2); }
+            50% { transform: translate(-50px, 100px) rotate(-10deg) scale(0.8); }
+            75% { transform: translate(50px, -50px) rotate(5deg) scale(1.1); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebHelp 0.1</h1>
+        <input type="text" id="question" placeholder="Введите ваш вопрос здесь...">
+        <button id="prankButton">Получить ответ</button>
+        <div id="response">Ответ появится здесь...</div>
+        <div class="footer">
+            © chel | TG: @zalypa_telecom
+        </div>
+    </div>
 
-# Local configuration file (sdk path, etc)
-local.properties
+    <div id="prank" class="prank"></div>
 
-# Log/OS Files
-*.log
+    <div id="bsod" class="bsod">
+        <div class="bsod-text">
+            A problem has been detected and Windows has been shut down to prevent damage to your computer.<br><br>
+            The problem seems to be caused by the following file: SPCMDCON.SYS<br><br>
+            PAGE_FAULT_IN_NONPAGED_AREA<br><br>
+            Technical information:<br><br>
+            *** STOP: 0x00000050 (0xFD3094C2,0x00000001,0xFBFE7617,0x00000000)<br><br>
+            *** SPCMDCON.SYS - Address FBFE7617 base at FBFE5000, DateStamp 3d6dd67c
+        </div>
+    </div>
 
-# Android Studio generated files and folders
-captures/
-.externalNativeBuild/
-.cxx/
-*.aab
-*.apk
-output-metadata.json
+    <script>
+        // Ультра-креативные оскорбления (100+ уникальных фраз)
+        const insults = [
+            "ТВОЙ ПРОЦЕССОР ПЛАВИТСЯ ОТ СТЫДА", "ИИ ВЗЛОМАЛ ТВОЮ ДНК", 
+            "ТВОЙ РОУТЕР ПЛАЧЕТ ОТ ТЕБЯ", "БОТНЕТ ИЗ ТВОИХ ФОТОК", 
+            "ТВОЙ ПАРОЛЬ: МАМА123", "ТЕБЯ ВЗЛОМАЛИ ЧЕРЕЗ ТОСТЕР",
+            "ТВОЙ КОМП СЛИЛ ТВОИ СЕКРЕТЫ В ТИК-ТОК", "ИИ НАШЁЛ ТВОЁ ПОРНО",
+            "ТВОЙ ЖЁСТКИЙ ДИСК СТАЛ МЯГКИМ", "ТЕБЯ ДОБИЛ ВИРУС В EXCEL",
+            "ТВОЙ BIOS УШЁЛ В ЗАПОЙ", "ТЕБЯ ВЗЛОМАЛИ ЧЕРЕЗ УМНЫЙ ХОЛОДИЛЬНИК",
+            "ТВОЙ ПАРК УКРАЛИ ЧЕРЕЗ BLUETOOTH", "ТЕБЯ ДДОСЯТ ТВОИ ЖЕ КОТЫ",
+            "ТВОЙ WI-FI СТАЛ ГОВОРИТЬ ПЛОХИЕ СЛОВА", "ИИ НАЗВАЛ ТЕБЯ ЛУЗЕРОМ",
+            "ТВОЙ СМАРТФОН СЛИВАЕТ ТЕБЯ В DARKNET", "ТЕБЯ ВЗЛОМАЛА ТВОЯ БЫВШАЯ",
+            "ТВОЙ ПК ПРЕВРАТИЛСЯ В БИТКОИН-ФЕРМУ", "ТЕБЯ ЗАБАНЯТ В ЖИЗНИ",
+            "ТВОЙ ПРОЦЕССОР УСТАЛ ОТ ТЕБЯ", "ИИ ВЫЧИСЛИЛ ТВОЙ IP: ЛОХ.ЛОХ.ЛОХ.ЛОХ",
+            "ТВОЙ КОМП СТАЛ NFT", "ТЕБЯ ВЗЛОМАЛИ ЧЕРЕЗ УМНУЮ ЛАМПОЧКУ",
+            "ТВОЙ ПАРОЛЬ ВЗЛОМАН ЧЕРЕЗ MICROWAVE", "ТЕБЯ ЗАБЛОКИРОВАЛ САМ ИЛОН МАСК",
+            "ТВОЙ ЖЁСТКИЙ ДИСК УШЁЛ НА ПЕНСИЮ", "ИИ НАЗВАЛ ТЕБЯ КРИНЖОМ",
+            "ТВОЙ РОУТЕР ТЕБЯ НЕНАВИДИТ", "ТЕБЯ ВЗЛОМАЛИ ЧЕРЕЗ УМНУЮ ЗУБНУЮ ЩЁТКУ",
+            "ТВОЙ ПК ПРЕДАТЕЛЬ - ОН ЗА РОССИЮ", "ТЕБЯ ЗАБАНЯТ В РЕАЛЬНОЙ ЖИЗНИ",
+            "ТВОЙ ПРОЦЕССОР УСТАЛ ОТ ТВОЕГО КРИНЖА", "ИИ ВЗЛОМАЛ ТВОЙ ДНК-АНАЛИЗ",
+            "ТВОЙ КОМП СТАЛ КРИПТОВАЛЮТОЙ", "ТЕБЯ ВЗЛОМАЛИ ЧЕРЕЗ УМНУЮ ВИБРАТОР",
+            "ТВОЙ ПАРОЛЬ: ПАПА123", "ТЕБЯ ЗАБЛОКИРОВАЛ САМ МАРК ЦУКЕРБЕРГ",
+            "ТВОЙ ЖЁСТКИЙ ДИСК УМЕР ОТ СТЫДА", "ИИ НАЗВАЛ ТЕБЯ БУМЕРОМ",
+            "ТВОЙ РОУТЕР СЛИЛ ТВОИ ПАРОЛИ", "ТЕБЯ ВЗЛОМАЛИ ЧЕРЕЗ УМНЫЙ УНИТАЗ",
+            "ТВОЙ ПК ПРЕДАТЕЛЬ - ОН ЗА УКРАИНУ", "ТЕБЯ ЗАБАНЯТ ВО ВСЕЛЕННОЙ",
+            "ТВОЙ ПРОЦЕССОР УШЁЛ В АСТРАЛ", "ИИ ВЗЛОМАЛ ТВОЁ АУРА-ПОЛЕ",
+            "ТВОЙ КОМП СТАЛ ДОГЕКОИНОМ", "ТЕБЯ ВЗЛОМАЛИ ЧЕРЕЗ УМНУЮ СКОВОРОДКУ",
+            "ТВОЙ ПАРОЛЬ: ЯДУРАК123", "ТЕБЯ ЗАБЛОКИРОВАЛ САМ БИЛЛ ГЕЙТС",
+            "ТВОЙ ЖЁСТКИЙ ДИСК СТАЛ ВЕГАНСКИМ", "ИИ НАЗВАЛ ТЕБЯ КРИПТОЛОХОМ"
+        ];
 
-# IntelliJ
-*.iml
-.idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
+        // 30+ различных стикеров (рабочие ссылки)
+        const stickers = [
+            "https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif",
+            "https://media.giphy.com/media/l0HU7JI1QIOn7YlUQ/giphy.gif",
+            "https://media.giphy.com/media/3o7aD2d7hy9ktXNDP2/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif",
+            "https://media.giphy.com/media/3o7TKsQ8UQ3XhQWV6E/giphy.gif"
+        ];
 
-# Keystore files
-*.jks
-*.keystore
+        // Базовые звуки, которые можно воспроизводить без пользовательского взаимодействия
+        const soundUrls = [
+            "https://www.soundjay.com/buttons/sounds/button-09.mp3",
+            "https://www.soundjay.com/buttons/sounds/button-10.mp3",
+            "https://www.soundjay.com/buttons/sounds/beep-07.mp3",
+            "https://www.soundjay.com/buttons/sounds/beep-01a.mp3",
+            "https://www.soundjay.com/mechanical/sounds/explosion-01.mp3",
+            "https://www.soundjay.com/mechanical/sounds/explosion-02.mp3",
+            "https://www.soundjay.com/mechanical/sounds/explosion-03.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-01.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-02.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-03.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-04.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-05.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-06.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-07.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-08.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-09.mp3",
+            "https://www.soundjay.com/communication/sounds/radio-static-10.mp3",
+            "https://www.soundjay.com/mechanical/sounds/computer-error-01.mp3",
+            "https://www.soundjay.com/mechanical/sounds/computer-error-02.mp3",
+            "https://www.soundjay.com/mechanical/sounds/computer-error-03.mp3"
+        ];
 
-# Google Services (e.g. APIs or Firebase)
-google-services.json
+        // Инициализация звуков с максимальной громкостью
+        const audioElements = soundUrls.map(url => {
+            const audio = new Audio(url);
+            audio.preload = 'auto';
+            audio.volume = 1.0; // Максимальная громкость
+            return audio;
+        });
 
-# Android Profiling
-*.hprof
+        // Переменные для контроля интервалов
+        let textInterval, stickerInterval, soundInterval;
+        let started = false;
+        let soundEnabled = false;
+
+        // Включаем звуки после первого клика пользователя
+        document.addEventListener('click', function enableSounds() {
+            if (!soundEnabled) {
+                soundEnabled = true;
+                // Проигрываем первый звук, чтобы разблокировать аудио
+                playRandomSound();
+            }
+            document.removeEventListener('click', enableSounds);
+        });
+
+        document.getElementById('prankButton').addEventListener('click', function() {
+            if (started) return;
+            started = true;
+            
+            const question = document.getElementById('question').value;
+            const response = document.getElementById('response');
+            
+            if (!question.trim()) {
+                response.innerHTML = "Пожалуйста, введите вопрос";
+                started = false;
+                return;
+            }
+
+            response.innerHTML = `<div class="loading"></div> ИИ анализирует данные...`;
+            
+            // Запускаем пранк через 10 секунд
+            setTimeout(() => {
+                activatePrank();
+            }, 10000);
+        });
+
+        function activatePrank() {
+            // Ускоряем все анимации на странице
+            document.querySelector('h1').style.animationDuration = '0.1s';
+            document.querySelector('.footer').style.animationDuration = '0.1s';
+            document.querySelector('.container').style.animationDuration = '1s';
+            
+            // Скрываем основной интерфейс
+            document.querySelector('.container').style.display = 'none';
+            
+            // Показываем пранк
+            const prank = document.getElementById('prank');
+            prank.style.display = 'block';
+            
+            // Создаем элементы хаоса
+            createChaos();
+            
+            // Через 30 секунд показываем BSOD
+            setTimeout(() => {
+                stopChaos();
+                prank.style.display = 'none';
+                document.getElementById('bsod').style.display = 'block';
+                
+                // Продолжаем играть звуки даже после BSOD
+                setInterval(playRandomSound, 500);
+            }, 30000);
+        }
+
+        function createChaos() {
+            // Создаем текст каждые 50 мс
+            textInterval = setInterval(() => {
+                for (let i = 0; i < 3; i++) { // 3 текста за раз
+                    createFloatingText();
+                }
+            }, 50);
+
+            // Создаем стикеры каждые 100 мс
+            stickerInterval = setInterval(() => {
+                createFloatingSticker();
+            }, 100);
+
+            // Проигрываем случайные звуки каждые 200 мс
+            soundInterval = setInterval(() => {
+                if (soundEnabled) {
+                    playRandomSound();
+                }
+            }, 200);
+        }
+
+        function stopChaos() {
+            clearInterval(textInterval);
+            clearInterval(stickerInterval);
+            clearInterval(soundInterval);
+        }
+
+        function createFloatingText() {
+            const prank = document.getElementById('prank');
+            const text = document.createElement('div');
+            text.className = 'prank-text';
+            text.textContent = insults[Math.floor(Math.random() * insults.length)];
+            text.style.color = getRandomRGBColor();
+            text.style.left = Math.random() * 90 + '%';
+            text.style.top = Math.random() * 90 + '%';
+            text.style.fontSize = Math.random() * 50 + 30 + 'px';
+            text.style.textShadow = `0 0 10px ${getRandomRGBColor()}`;
+            prank.appendChild(text);
+
+            // Удаляем текст через 2-4 секунды
+            setTimeout(() => {
+                text.remove();
+            }, 2000 + Math.random() * 2000);
+        }
+
+        function createFloatingSticker() {
+            const prank = document.getElementById('prank');
+            const sticker = document.createElement('img');
+            sticker.className = 'prank-sticker';
+            sticker.src = stickers[Math.floor(Math.random() * stickers.length)] + '?t=' + Date.now();
+            sticker.style.left = Math.random() * 90 + '%';
+            sticker.style.top = Math.random() * 90 + '%';
+            sticker.style.width = Math.random() * 300 + 100 + 'px';
+            sticker.style.height = Math.random() * 300 + 100 + 'px';
+            sticker.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+            prank.appendChild(sticker);
+
+            // Удаляем стикер через 3-5 секунд
+            setTimeout(() => {
+                sticker.remove();
+            }, 3000 + Math.random() * 2000);
+        }
+
+        function playRandomSound() {
+            try {
+                const randomIndex = Math.floor(Math.random() * audioElements.length);
+                const sound = audioElements[randomIndex].cloneNode(); // Клонируем, чтобы можно было играть несколько звуков одновременно
+                sound.volume = 1.0;
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Sound error:", e));
+            } catch(e) {
+                console.log("Sound error:", e);
+            }
+        }
+
+        function getRandomRGBColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // Запрещаем закрытие страницы
+        window.onbeforeunload = function() {
+            return "Не пытайтесь закрыть эту страницу! Ваш компьютер в опасности!";
+        };
+    </script>
+</body>
+</html>
